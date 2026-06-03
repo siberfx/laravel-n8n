@@ -7,6 +7,7 @@ use KayedSpace\N8n\Enums\RequestMethod;
 use KayedSpace\N8n\Events\ExecutionCompleted;
 use KayedSpace\N8n\Events\ExecutionDeleted;
 use KayedSpace\N8n\Events\ExecutionFailed;
+use KayedSpace\N8n\Exceptions\ExecutionFailedException;
 use KayedSpace\N8n\Facades\N8nClient;
 
 it('lists executions without filters', function () {
@@ -140,13 +141,13 @@ it('throws exception when execution fails', function () {
     Http::fake(fn () => Http::response(['id' => 1, 'status' => 'error'], 200));
 
     N8nClient::executions()->wait(1, timeout: 10, interval: 0);
-})->throws(\KayedSpace\N8n\Exceptions\ExecutionFailedException::class);
+})->throws(ExecutionFailedException::class);
 
 it('throws exception when execution times out', function () {
     Http::fake(fn () => Http::response(['id' => 1, 'status' => 'running'], 200));
 
     N8nClient::executions()->wait(1, timeout: 1, interval: 0);
-})->throws(\KayedSpace\N8n\Exceptions\ExecutionFailedException::class);
+})->throws(ExecutionFailedException::class);
 
 it('auto-paginates all executions', function () {
     Http::fake([
